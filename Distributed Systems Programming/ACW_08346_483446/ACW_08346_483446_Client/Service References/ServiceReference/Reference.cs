@@ -22,22 +22,22 @@ namespace ACW_08346_483446_Client.ServiceReference {
         System.Threading.Tasks.Task<string> HELLOAsync(int id);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SORT", ReplyAction="http://tempuri.org/IService/SORTResponse")]
-        string SORT(int number, string[] value);
+        string SORT(string[] value);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SORT", ReplyAction="http://tempuri.org/IService/SORTResponse")]
-        System.Threading.Tasks.Task<string> SORTAsync(int number, string[] value);
+        System.Threading.Tasks.Task<string> SORTAsync(string[] value);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/PUBKEY", ReplyAction="http://tempuri.org/IService/PUBKEYResponse")]
-        string PUBKEY();
+        byte[][] PUBKEY();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/PUBKEY", ReplyAction="http://tempuri.org/IService/PUBKEYResponse")]
-        System.Threading.Tasks.Task<string> PUBKEYAsync();
+        System.Threading.Tasks.Task<byte[][]> PUBKEYAsync();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ENC", ReplyAction="http://tempuri.org/IService/ENCResponse")]
-        string ENC(string message);
+        void ENC(byte[] message);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/ENC", ReplyAction="http://tempuri.org/IService/ENCResponse")]
-        System.Threading.Tasks.Task<string> ENCAsync(string message);
+        System.Threading.Tasks.Task ENCAsync(byte[] message);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SHA1", ReplyAction="http://tempuri.org/IService/SHA1Response")]
         string SHA1(string message);
@@ -52,10 +52,10 @@ namespace ACW_08346_483446_Client.ServiceReference {
         System.Threading.Tasks.Task<string> SHA256Async(string message);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SIGN", ReplyAction="http://tempuri.org/IService/SIGNResponse")]
-        string SIGN(string message);
+        byte[] SIGN(string message);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SIGN", ReplyAction="http://tempuri.org/IService/SIGNResponse")]
-        System.Threading.Tasks.Task<string> SIGNAsync(string message);
+        System.Threading.Tasks.Task<byte[]> SIGNAsync(string message);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -93,27 +93,27 @@ namespace ACW_08346_483446_Client.ServiceReference {
             return base.Channel.HELLOAsync(id);
         }
         
-        public string SORT(int number, string[] value) {
-            return base.Channel.SORT(number, value);
+        public string SORT(string[] value) {
+            return base.Channel.SORT(value);
         }
         
-        public System.Threading.Tasks.Task<string> SORTAsync(int number, string[] value) {
-            return base.Channel.SORTAsync(number, value);
+        public System.Threading.Tasks.Task<string> SORTAsync(string[] value) {
+            return base.Channel.SORTAsync(value);
         }
         
-        public string PUBKEY() {
+        public byte[][] PUBKEY() {
             return base.Channel.PUBKEY();
         }
         
-        public System.Threading.Tasks.Task<string> PUBKEYAsync() {
+        public System.Threading.Tasks.Task<byte[][]> PUBKEYAsync() {
             return base.Channel.PUBKEYAsync();
         }
         
-        public string ENC(string message) {
-            return base.Channel.ENC(message);
+        public void ENC(byte[] message) {
+            base.Channel.ENC(message);
         }
         
-        public System.Threading.Tasks.Task<string> ENCAsync(string message) {
+        public System.Threading.Tasks.Task ENCAsync(byte[] message) {
             return base.Channel.ENCAsync(message);
         }
         
@@ -133,11 +133,11 @@ namespace ACW_08346_483446_Client.ServiceReference {
             return base.Channel.SHA256Async(message);
         }
         
-        public string SIGN(string message) {
+        public byte[] SIGN(string message) {
             return base.Channel.SIGN(message);
         }
         
-        public System.Threading.Tasks.Task<string> SIGNAsync(string message) {
+        public System.Threading.Tasks.Task<byte[]> SIGNAsync(string message) {
             return base.Channel.SIGNAsync(message);
         }
     }

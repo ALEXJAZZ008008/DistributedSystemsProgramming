@@ -1,72 +1,90 @@
 ﻿using System;
 using ACW_08346_483446_Client.ServiceReference;
 using System.Security.Cryptography;
-using System.Linq;
 using System.Text;
 
 namespace ACW_08346_483446_Client
 {
+    //This is the Client
     class Client
     {
+        //These are member varibales used in the Client
         private static ServiceClient serviceClient;
         private static RSAParameters rsaParameters;
 
+        //This is the Main method of the Client
         static void Main(string[] args)
         {
+            //This initialises the Client
             InitialiseClient();
 
+            //This runs the Client
             RunClient();
         }
 
+        //This initialises the Client
         private static void InitialiseClient()
         {
             serviceClient = new ServiceClient();
         }
 
+        //This runs the Client
         private static void RunClient()
         {
-            for(int i = 0; i < int.Parse(Console.ReadLine()); i++)
+            //This is the loop counter fo the main loop of the program
+            int n = int.Parse(Console.ReadLine());
+
+            for (int i = 0; i < n; i++)
             {
+                //This splits the type of request from the message
                 string[] message = Console.ReadLine().Split(new char[] { ' ' }, 2);
 
-                switch(message[0].ToUpper())
+                //This is a switch on the type of request
+                switch (message[0].ToUpper())
                 {
+                    //This is a HELLO request
                     case "HELLO":
 
                         HELLO(message[1]);
 
                         break;
 
+                    //This is a SORT request
                     case "SORT":
 
                         SORT(message[1]);
 
                         break;
 
+                    //This is a PUBKEY request
                     case "PUBKEY":
 
                         PUBKEY();
 
                         break;
 
+                    //This is a ENC request
                     case "ENC":
 
                         ENC(message[1]);
 
                         break;
 
+                    //This is a SHA1 request
                     case "SHA1":
 
                         SHA1(message[1]);
 
                         break;
 
+                    //This is a SHA256 request
                     case "SHA256":
 
                         SHA256(message[1]);
 
                         break;
 
+                    //This is a SIGN request
                     case "SIGN":
 
                         SIGN(message[1]);
@@ -76,74 +94,51 @@ namespace ACW_08346_483446_Client
             }
         }
 
-        private static void HELLO(string inMessage)
+        //This is a HELLO request
+        private static void HELLO(string message)
         {
-            Console.Write("{0}\r\n", serviceClient.HELLO(int.Parse(inMessage)));
+            //This displays the hello response from the server
+            Console.Write("{0}\r\n", serviceClient.HELLO(int.Parse(message)));
         }
 
-        private static void SORT(string inMessage)
+        //This is a SORT request
+        private static void SORT(string message)
         {
-            string[] message = inMessage.Split(new char[] { ' ' }, 2);
-
-            int number = int.Parse(message[0]);
-            message = message[1].Split(' ');
-
-            Console.Write("Sorted values:\r\n{0}\r\n", serviceClient.SORT(number, message));
+            //This displays the sort response from the server
+            Console.Write("Sorted values:\r\n{0}\r\n", serviceClient.SORT(message.Split(new char[] { ' ' }, 2)[1].Split(' ')));
         }
 
+        //This is a PUBKEY request
         private static void PUBKEY()
         {
-            string[] PUBKEY = serviceClient.PUBKEY().Split(new char[] { ',' }, 2);
+            //This recieves the public key from the server
+            byte[][] PUBKEY = serviceClient.PUBKEY();
 
-            rsaParameters.Exponent = StringToByteArray(PUBKEY[0]);
-            rsaParameters.Modulus = StringToByteArray(PUBKEY[1]);
+            //These assign the public key
+            rsaParameters.Exponent = PUBKEY[0];
+            rsaParameters.Modulus = PUBKEY[1];
 
-            Console.Write("{0}\r\n{1}\r\n", rsaParameters.Exponent, rsaParameters.Modulus);
+            //This displays the public key response from the server
+            Console.Write("{0}\r\n{1}\r\n", ByteArrayToHexString(rsaParameters.Exponent), ByteArrayToHexString(rsaParameters.Modulus));
         }
 
-        private static void ENC(string inMessage)
+        //This is a ENC request
+        private static void ENC(string message)
         {
-            if(rsaParameters.Exponent != null && rsaParameters.Modulus != null)
-            {
-                try
-                {
-                    serviceClient.ENC(ByteArrayToHexString(RSAEncrypt(Encoding.Unicode.GetBytes(inMessage), rsaParameters)));
-
-                    Console.Write("Encrypted message sent.\r\n");
-                }
-                catch(CryptographicException e)
-                {
-                    Console.Write(e.ToString());
-                }
-            }
-            else
-            {
-                Console.Write("No public key.\r\n");
-            }
-        }
-
-        private static void SHA1(string inMessage)
-        {
-            Console.Write("{0}\r\n", serviceClient.SHA1(inMessage));
-        }
-
-        private static void SHA256(string inMessage)
-        {
-            Console.Write("{0}\r\n", serviceClient.SHA256(inMessage));
-        }
-
-        private static void SIGN(string inMessage)
-        {
+            //If the servers public key is known
             if (rsaParameters.Exponent != null && rsaParameters.Modulus != null)
             {
                 try
                 {
-                    serviceClient.SIGN(inMessage);
+                    //This sends the encrypted message to the server
+                    serviceClient.ENC(Encrypt(Encoding.ASCII.GetBytes(message), rsaParameters));
 
+                    Console.Write("Encrypted message sent.\r\n");
                 }
                 catch (CryptographicException e)
                 {
-                    Console.Write(e.ToString());
+                    //This displays any cryptographic exceptions
+                    Console.Write(e.Message);
                 }
             }
             else
@@ -152,38 +147,56 @@ namespace ACW_08346_483446_Client
             }
         }
 
-        private static byte[] StringToByteArray(string hex)
+        //This is a SHA1 request
+        private static void SHA1(string message)
         {
-            return Enumerable.Range(0, hex.Length).Where(x => x % 2 == 0).Select(x => Convert.ToByte(hex.Substring(x, 2), 16)).ToArray();
+            //This displays the hash response from the server
+            Console.Write("{0}\r\n", serviceClient.SHA1(message));
         }
 
-        static public byte[] RSAEncrypt(byte[] DataToEncrypt, RSAParameters RSAKeyInfo)
+        //This is a SHA256 request
+        private static void SHA256(string message)
         {
-            try
-            {
-                byte[] encryptedData;
+            //This displays the hash response from the server
+            Console.Write("{0}\r\n", serviceClient.SHA256(message));
+        }
 
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+        //This is a SIGN request
+        private static void SIGN(string message)
+        {
+            //If the servers public key is known
+            if (rsaParameters.Exponent != null && rsaParameters.Modulus != null)
+            {
+                try
                 {
-                    RSA.ImportParameters(RSAKeyInfo);
-                    encryptedData = RSA.Encrypt(DataToEncrypt, false);
+                    //If the signiture is correct
+                    if (Verify(Encoding.ASCII.GetBytes(message), serviceClient.SIGN(message), rsaParameters))
+                    {
+                        Console.Write("Signature successfully verified.\r\n");
+                    }
+                    else
+                    {
+                        Console.Write("Data not signed.\r\n");
+                    }
                 }
-
-                return encryptedData;
+                catch (CryptographicException e)
+                {
+                    //This displays any cryptographic exceptions
+                    Console.Write(e.Message);
+                }
             }
-            catch (CryptographicException e)
+            else
             {
-                Console.WriteLine(e.Message);
-
-                return null;
+                Console.Write("No public key.\r\n");
             }
         }
 
-        static string ByteArrayToHexString(byte[] byteArray)
+        //This converts from a byte array to a string of hex characters
+        private static string ByteArrayToHexString(byte[] byteArray)
         {
-            string hexString = "";
+            string hexString = string.Empty;
 
-            if (null != byteArray)
+            if (byteArray != null)
             {
                 for (int i = 0; i < byteArray.Length; i++)
                 {
@@ -192,6 +205,34 @@ namespace ACW_08346_483446_Client
             }
 
             return hexString;
+        }
+
+        //This encrypts a message
+        private static byte[] Encrypt(byte[] dataToEncrypt, RSAParameters rsaParameters)
+        {
+            using (RSACryptoServiceProvider rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+            {
+                rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+
+                return rsaCryptoServiceProvider.Encrypt(dataToEncrypt, false);
+            }
+        }
+
+        //This verifies a signed message
+        private static bool Verify(byte[] dataToVerify, byte[] signedData, RSAParameters rsaParameters)
+        {
+            if (signedData != null)
+            {
+                using (RSACryptoServiceProvider rsaCryptoServiceProvider = new RSACryptoServiceProvider())
+                using (SHA256CryptoServiceProvider sha256CryptoServiceProvider = new SHA256CryptoServiceProvider())
+                {
+                    rsaCryptoServiceProvider.ImportParameters(rsaParameters);
+
+                    return rsaCryptoServiceProvider.VerifyData(dataToVerify, sha256CryptoServiceProvider, signedData);
+                }
+            }
+
+            return false;
         }
     }
 }

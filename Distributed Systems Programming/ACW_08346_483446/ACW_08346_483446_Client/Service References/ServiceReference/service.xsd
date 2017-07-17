@@ -18,7 +18,6 @@
   <xs:element name="SORT">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="number" type="xs:int" />
         <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="value" nillable="true" type="q1:ArrayOfstring" />
       </xs:sequence>
     </xs:complexType>
@@ -38,22 +37,20 @@
   <xs:element name="PUBKEYResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="PUBKEYResult" nillable="true" type="xs:string" />
+        <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="PUBKEYResult" nillable="true" type="q2:ArrayOfbase64Binary" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="ENC">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="message" nillable="true" type="xs:base64Binary" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="ENCResponse">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="ENCResult" nillable="true" type="xs:string" />
-      </xs:sequence>
+      <xs:sequence />
     </xs:complexType>
   </xs:element>
   <xs:element name="SHA1">
@@ -94,7 +91,7 @@
   <xs:element name="SIGNResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="SIGNResult" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="SIGNResult" nillable="true" type="xs:base64Binary" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
